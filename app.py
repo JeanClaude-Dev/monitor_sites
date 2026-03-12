@@ -7,7 +7,7 @@ import os
 st.title("Monitor de Sites 🌐")
 
 # Lista de sites que você quer testar
-sites = ["https://www.opee.com.br", "https://www.google.com"]
+sites = ["https://www.opee.com.br", "https://www.capacita.opee.com.br","https://www.opee.com.br/orientacao_profissional","https://opeeloja.opee.com.br","https://www.opee.com.br/lojavirtual","https://metodologia.opee.com.br","https://www.escolaparapais.opee.com.br"]
 
 # Nome do arquivo onde o histórico será salvo no servidor do Streamlit
 ARQUIVO_HISTORICO = "historico_testes.csv"
@@ -24,7 +24,7 @@ if st.button('Iniciar Teste de Status'):
             detalhe = f"Status {response.status_code}"
         except Exception:
             status = "❌ OFFLINE"
-            detalhe = "Site inacessível"
+            detalhe = "Site inacessivel"
         
         # Adiciona a data e hora em cada linha
         novos_resultados.append({
