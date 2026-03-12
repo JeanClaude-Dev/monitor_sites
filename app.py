@@ -70,4 +70,4 @@ if st.button('Iniciar Teste de Status'):
         mime="text/csv"
     )
 
-    st.success(f"Teste concluído! O arquivo CSV agora contém apenas texto.")
+    st.success(f"Teste concluído!")
