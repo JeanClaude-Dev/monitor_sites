@@ -8,7 +8,7 @@ from datetime import datetime
 st.title("Monitor de Sites 🌐")
 
 # Lista de sites que você quer testar
-sites = ["https://www.opee.com.br", "https://www.naoexiste.com"]
+sites = ["https://www.opee.com.br", "https://www.opeenunca.com"]
 
 if st.button('Iniciar Teste de Status'):
     resultados = []
