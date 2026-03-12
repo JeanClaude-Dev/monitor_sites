@@ -6,61 +6,68 @@ import os
 
 st.title("Monitor de Sites 🌐")
 
-# Lista de sites que você quer testar
-sites = ["https://www.opee.com.br", "https://www.capacita.opee.com.br","https://www.opee.com.br/orientacao_profissional","https://opeeloja.opee.com.br","https://www.opee.com.br/lojavirtual","https://metodologia.opee.com.br","https://www.escolaparapais.opee.com.br"]
+sites = ["https://www.opee.com.br", "https://capacita.opee.com.br","https://www.opee.com.br/orientacao_profissional","https://opeeloja.opee.com.br","https://www.opee.com.br/lojavirtual","https://metodologia.opee.com.br","https://www.escolaparapais.opee.com.br"]
 
-# Nome do arquivo onde o histórico será salvo no servidor do Streamlit
+
 ARQUIVO_HISTORICO = "historico_testes.csv"
 
 if st.button('Iniciar Teste de Status'):
-    novos_resultados = []
-    # Captura data e hora atual formatada
+    novos_resultados_visual = [] # Para a tabela com emojis
+    novos_resultados_csv = []    # Para o arquivo sem emojis
+    
     agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     
     for url in sites:
         try:
             response = requests.get(url, timeout=10)
-            status = "✅ ONLINE" if response.status_code == 200 else "⚠️ ERRO"
+            if response.status_code == 200:
+                status_texto = "ONLINE"
+                status_visual = "✅ ONLINE"
+            else:
+                status_texto = "ERRO"
+                status_visual = "⚠️ ERRO"
             detalhe = f"Status {response.status_code}"
         except Exception:
-            status = "❌ OFFLINE"
-            detalhe = "Site inacessivel"
+            status_texto = "OFFLINE"
+            status_visual = "❌ OFFLINE"
+            detalhe = "Site inacessível"
         
-        # Adiciona a data e hora em cada linha
-        novos_resultados.append({
-            "Site": url, 
-            "Data/Hora": agora, 
-            "Status": status, 
-            "Detalhes": detalhe
+        # Dados para exibir na tela (com emoji)
+        novos_resultados_visual.append({
+            "Data/Hora": agora, "Site": url, "Status": status_visual, "Detalhes": detalhe
+        })
+        
+        # Dados para salvar no CSV (texto puro)
+        novos_resultados_csv.append({
+            "Data/Hora": agora, "Site": url, "Status": status_texto, "Detalhes": detalhe
         })
     
-    # Criar DataFrame com os novos dados
-    df_novo = pd.DataFrame(novos_resultados)
+    # DataFrame para exibição
+    df_visual = pd.DataFrame(novos_resultados_visual)
+    # DataFrame para processamento/salvamento
+    df_novo_csv = pd.DataFrame(novos_resultados_csv)
 
-    # LÓGICA DE ACUMULAR: Verifica se o arquivo já existe
+    # Lógica de acúmulo no arquivo
     if os.path.exists(ARQUIVO_HISTORICO):
-        # Lê o histórico existente
         df_antigo = pd.read_csv(ARQUIVO_HISTORICO, sep=",")
-        # Junta o antigo com o novo (append)
-        df_final = pd.concat([df_antigo, df_novo], ignore_index=True)
+        df_final_csv = pd.concat([df_antigo, df_novo_csv], ignore_index=True)
     else:
-        # Se não existe, o histórico é apenas o resultado atual
-        df_final = df_novo
+        df_final_csv = df_novo_csv
 
-    # Salva no "disco" do servidor (separado por vírgula)
-    df_final.to_csv(ARQUIVO_HISTORICO, index=False, sep=",")
+    # Salva sem emojis e com a codificação compatível com Excel
+    df_final_csv.to_csv(ARQUIVO_HISTORICO, index=False, sep=",", encoding="utf-8-sig")
 
-    # Exibe na tela (os resultados mais recentes primeiro para facilitar a leitura)
+    # Exibe na tela com emojis para ficar amigável
     st.subheader("Resultados Atuais")
-    st.table(df_novo)
+    st.table(df_visual)
 
-    # Botão para baixar o histórico COMPLETO acumulado
-    csv_download = df_final.to_csv(index=False, sep=",").encode('utf-8')
+    # O botão de download baixa o histórico SEM emojis
+    csv_download = df_final_csv.to_csv(index=False, sep=",", encoding="utf-8-sig").encode('utf-8-sig')
     st.download_button(
-        label="Baixar Histórico Acumulado (CSV)",
+        label="Baixar Histórico Limpo (CSV)",
         data=csv_download,
         file_name="historico_sites.csv",
         mime="text/csv"
     )
 
-    st.success(f"Teste concluído! O histórico agora tem {len(df_final)} registros.")
+    st.success(f"Teste concluído! O arquivo CSV agora contém apenas texto.")
