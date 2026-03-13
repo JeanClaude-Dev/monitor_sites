@@ -4,6 +4,12 @@ import pandas as pd
 from datetime import datetime
 import os
 
+import pytz
+from datetime import datetime
+
+fuso_sp = pytz.timezone('America/Sao_Paulo')
+agora = datetime.now(fuso_sp).strftime("%d/%m/%Y %H:%M:%S")
+
 st.title("Monitor de Sites 🌐")
 
 sites = ["https://www.opee.com.br", "https://capacita.opee.com.br","https://www.opee.com.br/orientacao_profissional","https://opeeloja.opee.com.br","https://www.opee.com.br/lojavirtual","https://metodologia.opee.com.br","https://www.escolaparapais.opee.com.br"]
@@ -15,7 +21,7 @@ if st.button('Iniciar Teste de Status'):
     novos_resultados_visual = [] # Para a tabela com emojis
     novos_resultados_csv = []    # Para o arquivo sem emojis
     
-    agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    #agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     
     for url in sites:
         try:

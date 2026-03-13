@@ -1,3 +1,4 @@
 streamlit
 requests
 pandas
+pytz==2024.1
